@@ -46,10 +46,6 @@ pnpm run build
 
 - 🧑‍💻 开发者：[@king-open](https://github.com/king-open)
 
-## 许可证
-
-[MIT License](LICENSE)
-
 ---
 
 🎨 用心设计，用爱编码

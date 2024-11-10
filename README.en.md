@@ -46,9 +46,6 @@ pnpm run build
 
 - 🧑‍💻 Developer: [@king-open](https://github.com/king-open)
 
-## License
-
-[MIT License](LICENSE)
 
 ---
 
