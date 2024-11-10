@@ -1,27 +1,60 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import useSWR from 'swr';
 import { HeartIcon, ChatBubbleLeftIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 
-export default function Home() {
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
+// 模拟 API 请求函数
+const fetchPosts = async (page) => {
+  // 模拟网络请求
+  await new Promise(resolve => setTimeout(resolve, 1000));
   
-  // 模拟数据
-  const [posts, setPosts] = useState([
+  // 第一页使用固定数据
+  if (page === 1) {
+    return [
+      {
+        id: 1,
+        image: 'https://images.unsplash.com/photo-1516205651411-aef33a44f7c2?w=800',
+        content: '时光静好，愿你安好。无论经历什么，记住保持微笑。',
+        likes: 128,
+        comments: 32,
+        liked: false,
+      },
+    ];
+  }
+
+  // 其他页面返回随机数据
+  return [
     {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1516205651411-aef33a44f7c2?w=800',
-      content: '时光静好，愿你安好。无论经历什么，记住保持微笑。',
-      likes: 128,
-      comments: 32,
+      id: Date.now(),
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
+      content: '新的一天，新的开始。',
+      likes: Math.floor(Math.random() * 1000),
+      comments: Math.floor(Math.random() * 100),
       liked: false,
     },
-    // ... 其他帖子数据
-  ]);
+  ];
+};
+
+export default function Home() {
+  const [page, setPage] = useState(1);
+  
+  // 使用 SWR 获取第一页数据，禁用自动重新验证
+  const { data: firstPageData } = useSWR('posts-1', () => fetchPosts(1), {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    refreshInterval: 0,
+  });
+
+  // 使用 state 管理后续页面的数据
+  const [additionalPosts, setAdditionalPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+
+  // 合并所有数据
+  const posts = [...(firstPageData || []), ...additionalPosts];
 
   // 加载更多数据
   const loadMore = async () => {
@@ -31,35 +64,14 @@ export default function Home() {
     setError(null);
 
     try {
-      // 模拟异步加载和随机错误
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // 随机模拟成功或失败
-          if (Math.random() > 0.7) {
-            reject(new Error('网络请求失败，请稍后重试'));
-          } else {
-            resolve();
-          }
-        }, 1000);
-      });
-
-      // 模拟新数据
-      const newPosts = [
-        {
-          id: posts.length + 1,
-          image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
-          content: '新的一天，新的开始。',
-          likes: Math.floor(Math.random() * 1000),
-          comments: Math.floor(Math.random() * 100),
-          liked: false,
-        },
-      ];
-
-      setPosts(prev => [...prev, ...newPosts]);
-      setPage(prev => prev + 1);
+      const nextPage = page + 1;
+      const newPosts = await fetchPosts(nextPage);
+      
+      setAdditionalPosts(prev => [...prev, ...newPosts]);
+      setPage(nextPage);
       
       // 模拟数据到达末尾
-      if (page >= 3) {
+      if (nextPage >= 3) {
         setHasMore(false);
       }
     } catch (err) {
