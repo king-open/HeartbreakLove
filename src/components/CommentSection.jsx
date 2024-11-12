@@ -9,11 +9,13 @@ const CommentSection = forwardRef(({ comments: initialComments }, ref) => {
   const [comments, setComments] = useState(initialComments || []);
   const commentSectionRef = useRef(null);
 
-  // 暴露方法给父组件
   useImperativeHandle(ref, () => ({
     scrollToComments: () => {
       commentSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
       setIsOpen(true);
+    },
+    hideComments: () => {
+      setIsOpen(false);
     }
   }));
 
@@ -34,13 +36,6 @@ const CommentSection = forwardRef(({ comments: initialComments }, ref) => {
 
   return (
     <div ref={commentSectionRef} className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="text-sm text-gray-500 hover:text-primary-500 transition-colors"
-      >
-        {isOpen ? '收起评论' : '查看评论'}
-      </button>
-
       {isOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}

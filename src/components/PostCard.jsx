@@ -8,6 +8,14 @@ import CommentSection from './CommentSection';
 export default function PostCard({ post }) {
   const commentRef = useRef(null);
 
+  const handleCommentMouseEnter = () => {
+    commentRef.current?.scrollToComments();
+  };
+
+  const handleCommentMouseLeave = () => {
+    commentRef.current?.hideComments();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -43,13 +51,14 @@ export default function PostCard({ post }) {
               )}
               <span>{post.likes}</span>
             </button>
-            <button 
-              onClick={() => commentRef.current?.scrollToComments()}
-              className="flex items-center space-x-1 text-gray-500 hover:text-primary-500 transition-colors"
+            <div 
+              onMouseEnter={handleCommentMouseEnter}
+              onMouseLeave={handleCommentMouseLeave}
+              className="flex items-center space-x-1 text-gray-500 hover:text-primary-500 transition-colors cursor-pointer"
             >
               <ChatBubbleLeftIcon className="w-5 h-5" />
               <span>{post.comments.length}</span>
-            </button>
+            </div>
           </div>
           
           <span className="text-xs text-gray-400">
