@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { UserCircleIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
+import { UserCircleIcon, PencilSquareIcon, CameraIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import PostCard from '../components/PostCard';
 
@@ -40,7 +40,17 @@ export default function Profile() {
         className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8"
       >
         <div className="flex items-start gap-6">
-          <UserCircleIcon className="w-24 h-24 text-gray-400" />
+          <div className="relative group">
+            <UserCircleIcon className="w-24 h-24 text-gray-400" />
+            <div className="absolute inset-0 flex items-center justify-center 
+                          bg-black bg-opacity-50 rounded-full opacity-0 
+                          group-hover:opacity-100 transition-opacity cursor-pointer">
+              <div className="flex flex-col items-center text-white">
+                <CameraIcon className="w-8 h-8" />
+                <span className="text-xs mt-1">更换头像</span>
+              </div>
+            </div>
+          </div>
           
           <div className="flex-1">
             <div className="flex items-center justify-between">
