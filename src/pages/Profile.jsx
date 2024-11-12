@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { UserCircleIcon, PencilSquareIcon, CameraIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import PostCard from '../components/PostCard';
+import AvatarUploadModal from '../components/AvatarUploadModal';
 
 export default function Profile() {
   const [userPosts] = useState([
@@ -31,6 +32,13 @@ export default function Profile() {
     followingCount: 128,
   });
 
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
+  const handleAvatarUpload = (imageUrl) => {
+    setAvatarUrl(imageUrl);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* 个人信息卡片 */}
@@ -41,10 +49,21 @@ export default function Profile() {
       >
         <div className="flex items-start gap-6">
           <div className="relative group">
-            <UserCircleIcon className="w-24 h-24 text-gray-400" />
-            <div className="absolute inset-0 flex items-center justify-center 
-                          bg-black bg-opacity-50 rounded-full opacity-0 
-                          group-hover:opacity-100 transition-opacity cursor-pointer">
+            {avatarUrl ? (
+              <img 
+                src={avatarUrl} 
+                alt="用户头像" 
+                className="w-24 h-24 rounded-full object-cover"
+              />
+            ) : (
+              <UserCircleIcon className="w-24 h-24 text-gray-400" />
+            )}
+            <div 
+              className="absolute inset-0 flex items-center justify-center 
+                        bg-black bg-opacity-50 rounded-full opacity-0 
+                        group-hover:opacity-100 transition-opacity cursor-pointer"
+              onClick={() => setIsAvatarModalOpen(true)}
+            >
               <div className="flex flex-col items-center text-white">
                 <CameraIcon className="w-8 h-8" />
                 <span className="text-xs mt-1">更换头像</span>
@@ -112,6 +131,13 @@ export default function Profile() {
           <PostCard key={post.id} post={post} />
         ))}
       </div>
+
+      {/* 头像上传模态框 */}
+      <AvatarUploadModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        onUpload={handleAvatarUpload}
+      />
     </div>
   );
 } 
