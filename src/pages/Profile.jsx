@@ -13,6 +13,7 @@ export default function Profile() {
       likes: 128,
       comments: [],
       liked: false,
+      timestamp: new Date().toISOString(),
     },
     {
       id: 2,
@@ -21,6 +22,7 @@ export default function Profile() {
       likes: 56,
       comments: [],
       liked: false,
+      timestamp: new Date().toISOString(),
     },
   ]);
 

@@ -33,6 +33,7 @@ const fetchPosts = async (page) => {
           }
         ],
         liked: false,
+        timestamp: '2024-03-20T09:00:00.000Z',
       },
     ];
   }
@@ -46,6 +47,7 @@ const fetchPosts = async (page) => {
       likes: Math.floor(Math.random() * 1000),
       comments: [],
       liked: false,
+      timestamp: new Date().toISOString(),
     },
   ];
 };

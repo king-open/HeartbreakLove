@@ -32,6 +32,18 @@ export default function PostCard({ post }) {
     setIsLiked(!isLiked);
   };
 
+  const formatTime = (timestamp) => {
+    return new Date(timestamp).toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -80,7 +92,7 @@ export default function PostCard({ post }) {
           </div>
           
           <span className="text-xs text-gray-400">
-            刚刚
+            {formatTime(post.timestamp)}
           </span>
         </div>
       </div>
@@ -103,5 +115,6 @@ PostCard.propTypes = {
     likes: PropTypes.number.isRequired,
     comments: PropTypes.array.isRequired,
     liked: PropTypes.bool.isRequired,
+    timestamp: PropTypes.string.isRequired,
   }).isRequired,
 };
