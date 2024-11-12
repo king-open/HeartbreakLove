@@ -51,6 +51,8 @@ export default function Profile() {
       ...prev,
       name: newData.name,
       bio: newData.bio,
+      mood: newData.mood,
+      tags: newData.tags,
     }));
   };
 

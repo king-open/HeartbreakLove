@@ -111,10 +111,10 @@ export default function ProfileEditModal({ isOpen, onClose, userInfo, onSave }) 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">
               当前心情
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {moodOptions.map(mood => (
                 <button
                   key={mood}
@@ -132,10 +132,10 @@ export default function ProfileEditModal({ isOpen, onClose, userInfo, onSave }) 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">
               个人标签
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {tagOptions.map(tag => (
                 <button
                   key={tag}
