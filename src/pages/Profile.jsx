@@ -3,6 +3,7 @@ import { UserCircleIcon, PencilSquareIcon, CameraIcon } from '@heroicons/react/2
 import { useState } from 'react';
 import PostCard from '../components/PostCard';
 import AvatarUploadModal from '../components/AvatarUploadModal';
+import ProfileEditModal from '../components/ProfileEditModal';
 
 export default function Profile() {
   const [userPosts] = useState([
@@ -26,19 +27,31 @@ export default function Profile() {
     },
   ]);
 
-  const [userInfo] = useState({
+  const [userInfo, setUserInfo] = useState({
     name: '阳光灿烂',
     bio: '热爱生活，享受当下',
     postsCount: 12,
     followersCount: 256,
     followingCount: 128,
+    tags: ['摄影', '旅行', '美食'],
+    mood: '开心',
   });
 
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(null);
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   const handleAvatarUpload = (imageUrl) => {
     setAvatarUrl(imageUrl);
+  };
+
+  const handleProfileSave = (newData) => {
+    setUserInfo(prev => ({
+      ...prev,
+      name: newData.name,
+      bio: newData.bio,
+    }));
   };
 
   return (
@@ -47,98 +60,135 @@ export default function Profile() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6"
       >
-        <div className="flex items-start gap-6">
-          <div className="relative group">
-            {avatarUrl ? (
-              <img 
-                src={avatarUrl} 
-                alt="用户头像" 
-                className="w-24 h-24 rounded-full object-cover"
-              />
-            ) : (
-              <UserCircleIcon className="w-24 h-24 text-gray-400" />
-            )}
-            <div 
-              className="absolute inset-0 flex items-center justify-center 
-                        bg-black bg-opacity-50 rounded-full opacity-0 
-                        group-hover:opacity-100 transition-opacity cursor-pointer"
-              onClick={() => setIsAvatarModalOpen(true)}
-            >
-              <div className="flex flex-col items-center text-white">
-                <CameraIcon className="w-8 h-8" />
-                <span className="text-xs mt-1">更换头像</span>
+        {/* 基本信息区域 */}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* 左侧：头像和编辑按钮 */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative group">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="rounded-full overflow-hidden shadow-lg"
+              >
+                {avatarUrl ? (
+                  <img 
+                    src={avatarUrl} 
+                    alt="用户头像" 
+                    className="w-24 h-24 object-cover"
+                  />
+                ) : (
+                  <UserCircleIcon className="w-24 h-24 text-gray-400" />
+                )}
+              </motion.div>
+              <div 
+                className="absolute inset-0 flex items-center justify-center 
+                          bg-black bg-opacity-40 rounded-full opacity-0 
+                          group-hover:opacity-100 transition-all duration-200
+                          cursor-pointer"
+                onClick={() => setIsAvatarModalOpen(true)}
+              >
+                <CameraIcon className="w-6 h-6 text-white" />
               </div>
             </div>
+            <motion.button 
+              onClick={() => setIsEditModalOpen(true)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center gap-2 px-4 py-2 text-sm
+                       bg-gray-100 dark:bg-gray-700 
+                       text-gray-600 dark:text-gray-300
+                       rounded-full hover:bg-gray-200 dark:hover:bg-gray-600
+                       transition-colors"
+            >
+              <PencilSquareIcon className="w-4 h-4" />
+              编辑资料
+            </motion.button>
           </div>
-          
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {userInfo.name}
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
-                  {userInfo.bio}
-                </p>
-              </div>
-              
-              <button className="flex items-center gap-2 px-4 py-2 bg-primary-500 
-                               text-white rounded-full hover:bg-primary-600 transition-colors">
-                <PencilSquareIcon className="w-5 h-5" />
-                编辑资料
-              </button>
+
+          {/* 右侧：用户信息 */}
+          <div className="flex-1 space-y-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {userInfo.name}
+              </h1>
+              <p className="mt-1 text-gray-600 dark:text-gray-400">
+                {userInfo.bio}
+              </p>
             </div>
 
-            <div className="flex gap-6 mt-6">
+            {/* 数据统计 */}
+            <div className="flex gap-6 py-3 border-y border-gray-100 dark:border-gray-700">
               <div className="text-center">
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                  {userInfo.postsCount}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">帖子</div>
+                <div className="font-semibold text-gray-900 dark:text-white">{userInfo.postsCount}</div>
+                <div className="text-sm text-gray-500">帖子</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                  {userInfo.followersCount}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">关注者</div>
+                <div className="font-semibold text-gray-900 dark:text-white">{userInfo.followersCount}</div>
+                <div className="text-sm text-gray-500">关注者</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                  {userInfo.followingCount}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">正在关注</div>
+                <div className="font-semibold text-gray-900 dark:text-white">{userInfo.followingCount}</div>
+                <div className="text-sm text-gray-500">正在关注</div>
               </div>
+            </div>
+
+            {/* 标签和心情 */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/30 
+                             text-blue-600 dark:text-blue-300 rounded-full">
+                {userInfo.mood}
+              </span>
+              {userInfo.tags.map(tag => (
+                <span 
+                  key={tag}
+                  className="px-3 py-1 text-sm bg-gray-50 dark:bg-gray-700 
+                           text-gray-600 dark:text-gray-300 rounded-full"
+                >
+                  #{tag}
+                </span>
+              ))}
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* 标签页 */}
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
-        <nav className="flex gap-8">
-          <button className="px-4 py-2 text-primary-500 border-b-2 border-primary-500">
-            我的帖子
+      {/* 内容标签页 */}
+      <div className="mt-6">
+        <div className="flex border-b border-gray-200 dark:border-gray-700">
+          <button 
+            className="px-6 py-3 text-primary-500 border-b-2 border-primary-500
+                     font-medium text-sm"
+          >
+            帖子
           </button>
-          <button className="px-4 py-2 text-gray-500 hover:text-primary-500">
-            喜欢的帖子
+          <button 
+            className="px-6 py-3 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300
+                     font-medium text-sm"
+          >
+            喜欢
           </button>
-        </nav>
+        </div>
       </div>
 
       {/* 帖子列表 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {userPosts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
       </div>
 
-      {/* 头像上传模态框 */}
+      {/* 模态框 */}
       <AvatarUploadModal
         isOpen={isAvatarModalOpen}
         onClose={() => setIsAvatarModalOpen(false)}
         onUpload={handleAvatarUpload}
+      />
+      <ProfileEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        userInfo={userInfo}
+        onSave={handleProfileSave}
       />
     </div>
   );
