@@ -1,13 +1,34 @@
-import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useState, useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { UserCircleIcon } from '@heroicons/react/24/solid';
 
-const CommentSection = forwardRef(({ comments: initialComments }, ref) => {
+const CommentSection = forwardRef(({ comments: initialComments, isCommenting, onClose, onNewComment }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState(initialComments || []);
   const commentSectionRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (commentSectionRef.current && !commentSectionRef.current.contains(event.target)) {
+        onClose();
+        setIsOpen(false);
+      }
+    };
+
+    if (isCommenting) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCommenting, onClose]);
+
+  useEffect(() => {
+    setIsOpen(isCommenting);
+  }, [isCommenting]);
 
   useImperativeHandle(ref, () => ({
     scrollToComments: () => {
@@ -32,6 +53,7 @@ const CommentSection = forwardRef(({ comments: initialComments }, ref) => {
 
     setComments(prev => [comment, ...prev]);
     setNewComment('');
+    onNewComment?.();
   };
 
   return (
@@ -101,6 +123,15 @@ CommentSection.propTypes = {
       timestamp: PropTypes.string.isRequired,
     })
   ),
+  isCommenting: PropTypes.bool,
+  onClose: PropTypes.func,
+  onNewComment: PropTypes.func,
+};
+
+CommentSection.defaultProps = {
+  isCommenting: false,
+  onClose: () => {},
+  onNewComment: () => {},
 };
 
 export default CommentSection;

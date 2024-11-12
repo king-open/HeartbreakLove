@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { HeartIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
@@ -7,13 +7,29 @@ import CommentSection from './CommentSection';
 
 export default function PostCard({ post }) {
   const commentRef = useRef(null);
+  const [isCommenting, setIsCommenting] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(post.comments.length);
+  const [isLiked, setIsLiked] = useState(post.liked);
+  const [likesCount, setLikesCount] = useState(post.likes);
 
-  const handleCommentMouseEnter = () => {
+  const handleCommentClick = (e) => {
+    e.stopPropagation();
+    setIsCommenting(true);
     commentRef.current?.scrollToComments();
   };
 
-  const handleCommentMouseLeave = () => {
-    commentRef.current?.hideComments();
+  const handleNewComment = () => {
+    setCommentsCount(prev => prev + 1);
+  };
+
+  const handleLikeClick = (e) => {
+    e.stopPropagation();
+    if (!isLiked) {
+      setLikesCount(prev => prev + 1);
+    } else {
+      setLikesCount(prev => prev - 1);
+    }
+    setIsLiked(!isLiked);
   };
 
   return (
@@ -43,22 +59,24 @@ export default function PostCard({ post }) {
         
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center space-x-4">
-            <button className="flex items-center space-x-1 text-gray-500 hover:text-primary-500 transition-colors">
-              {post.liked ? (
+            <button 
+              onClick={handleLikeClick}
+              className="flex items-center space-x-1 text-gray-500 hover:text-primary-500 transition-colors"
+            >
+              {isLiked ? (
                 <HeartIconSolid className="w-5 h-5 text-red-500" />
               ) : (
                 <HeartIcon className="w-5 h-5" />
               )}
-              <span>{post.likes}</span>
+              <span>{likesCount}</span>
             </button>
-            <div 
-              onMouseEnter={handleCommentMouseEnter}
-              onMouseLeave={handleCommentMouseLeave}
+            <button 
+              onClick={handleCommentClick}
               className="flex items-center space-x-1 text-gray-500 hover:text-primary-500 transition-colors cursor-pointer"
             >
               <ChatBubbleLeftIcon className="w-5 h-5" />
-              <span>{post.comments.length}</span>
-            </div>
+              <span>{commentsCount}</span>
+            </button>
           </div>
           
           <span className="text-xs text-gray-400">
@@ -66,7 +84,13 @@ export default function PostCard({ post }) {
           </span>
         </div>
       </div>
-      <CommentSection ref={commentRef} comments={post.comments} />
+      <CommentSection 
+        ref={commentRef} 
+        comments={post.comments} 
+        isCommenting={isCommenting}
+        onClose={() => setIsCommenting(false)}
+        onNewComment={handleNewComment}
+      />
     </motion.div>
   );
 }
@@ -80,4 +104,4 @@ PostCard.propTypes = {
     comments: PropTypes.array.isRequired,
     liked: PropTypes.bool.isRequired,
   }).isRequired,
-}; 
+};
