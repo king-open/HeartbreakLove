@@ -96,19 +96,23 @@ export default function Home() {
     }
   };
 
-  // 加载状态组件
+  // 更新加载状态组件
   const LoadingState = () => (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex items-center justify-center space-x-2 text-gray-500"
+      className="flex justify-center py-8"
     >
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full"
-      />
-      <span>加载中...</span>
+      <div className="relative w-12 h-12">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="w-12 h-12 border-4 border-primary-200 dark:border-primary-900 
+                         border-t-primary-500 rounded-full animate-spin" />
+        </div>
+        <div className="absolute top-0 left-0 w-full h-full 
+                       flex items-center justify-center">
+          <div className="w-2 h-2 bg-primary-500 rounded-full" />
+        </div>
+      </div>
     </motion.div>
   );
 
