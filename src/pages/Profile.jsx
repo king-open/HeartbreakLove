@@ -15,6 +15,14 @@ export default function Profile() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const [stats, setStats] = useState({
+    postsCount: userPosts.length,
+    followersCount: 0,
+    followingCount: 0
+  });
+
+  const [isFollowed, setIsFollowed] = useState(false);
+
   const handleAvatarUpload = (imageUrl) => {
     setAvatarUrl(imageUrl);
   };
@@ -27,6 +35,21 @@ export default function Profile() {
       mood: newData.mood,
       tags: newData.tags,
     }));
+  };
+
+  const handleFollowClick = () => {
+    if (!isFollowed) {
+      setStats(prev => ({
+        ...prev,
+        followersCount: prev.followersCount + 1
+      }));
+    } else {
+      setStats(prev => ({
+        ...prev,
+        followersCount: Math.max(0, prev.followersCount - 1)
+      }));
+    }
+    setIsFollowed(!isFollowed);
   };
 
   return (
@@ -95,15 +118,28 @@ export default function Profile() {
             {/* 数据统计 */}
             <div className="flex gap-6 py-3 border-y border-gray-100 dark:border-gray-700">
               <div className="text-center">
-                <div className="font-semibold text-gray-900 dark:text-white">{userInfo.postsCount}</div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {stats.postsCount}
+                </div>
                 <div className="text-sm text-gray-500">帖子</div>
               </div>
+              <motion.div 
+                className="text-center cursor-pointer"
+                onClick={handleFollowClick}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {stats.followersCount}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {isFollowed ? '已关注' : '关注'}
+                </div>
+              </motion.div>
               <div className="text-center">
-                <div className="font-semibold text-gray-900 dark:text-white">{userInfo.followersCount}</div>
-                <div className="text-sm text-gray-500">关注者</div>
-              </div>
-              <div className="text-center">
-                <div className="font-semibold text-gray-900 dark:text-white">{userInfo.followingCount}</div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {stats.followingCount}
+                </div>
                 <div className="text-sm text-gray-500">正在关注</div>
               </div>
             </div>
