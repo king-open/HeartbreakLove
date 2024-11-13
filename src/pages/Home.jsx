@@ -49,26 +49,6 @@ export default function Home() {
     }
   };
 
-  // 更新加载状态组件
-  const LoadingState = () => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex justify-center py-8"
-    >
-      <div className="relative w-12 h-12">
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="w-12 h-12 border-4 border-primary-200 dark:border-primary-900 
-                         border-t-primary-500 rounded-full animate-spin" />
-        </div>
-        <div className="absolute top-0 left-0 w-full h-full 
-                       flex items-center justify-center">
-          <div className="w-2 h-2 bg-primary-500 rounded-full" />
-        </div>
-      </div>
-    </motion.div>
-  );
-
   // 错误状态组件
   const ErrorState = ({ message, onRetry }) => (
     <motion.div
@@ -113,27 +93,58 @@ export default function Home() {
       </AnimatePresence>
 
       <div className="mt-8 text-center space-y-4">
-        {loading && <LoadingState />}
-        
-        {error && <ErrorState message={error} onRetry={loadMore} />}
-        
-        {!loading && !error && hasMore && (
-          <motion.button
-            onClick={loadMore}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 
-                     text-white rounded-full transition-all hover:opacity-90"
-          >
-            加载更多
-          </motion.button>
-        )}
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.button
+              key="loading"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              disabled
+              className="px-6 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 
+                       text-white rounded-full transition-all inline-flex items-center justify-center"
+            >
+              <motion.span
+                animate={{
+                  opacity: [1, 0.5, 1],
+                  transition: {
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                }}
+              >
+                加载中...
+              </motion.span>
+            </motion.button>
+          ) : (
+            <>
+              {error && <ErrorState message={error} onRetry={loadMore} />}
+              
+              {!error && hasMore && (
+                <motion.button
+                  key="loadMore"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  onClick={loadMore}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 
+                           text-white rounded-full transition-all hover:opacity-90"
+                >
+                  加载更多
+                </motion.button>
+              )}
+            </>
+          )}
+        </AnimatePresence>
 
         {!hasMore && posts.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-gray-500 dark:text-gray-400"
+            className="text-center text-gray-500 dark:text-gray-400 py-4"
           >
             已经到底啦 ~
           </motion.div>
