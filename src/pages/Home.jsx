@@ -4,59 +4,13 @@ import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import PostCard from '../components/PostCard';
-
-// 模拟 API 请求函数
-const fetchPosts = async (page) => {
-  // 模拟网络请求
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // 第一页使用固定数据
-  if (page === 1) {
-    return [
-      {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1516205651411-aef33a44f7c2?w=800',
-        content: '时光静好，愿你安好。无论经历什么，记住保持微笑。',
-        likes: 128,
-        comments: [
-          {
-            id: 1,
-            content: '写得真好！',
-            author: '快乐的小松鼠',
-            timestamp: '2024-03-20T10:00:00.000Z',
-          },
-          {
-            id: 2,
-            content: '感同身受',
-            author: '阳光灿烂',
-            timestamp: '2024-03-20T11:30:00.000Z',
-          }
-        ],
-        liked: false,
-        timestamp: '2024-03-20T09:00:00.000Z',
-      },
-    ];
-  }
-
-  // 其他页面返回随机数据
-  return [
-    {
-      id: Date.now(),
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
-      content: '新的一天，新的开始。',
-      likes: Math.floor(Math.random() * 1000),
-      comments: [],
-      liked: false,
-      timestamp: new Date().toISOString(),
-    },
-  ];
-};
+import { mockPosts } from '../services/mockData';
 
 export default function Home() {
   const [page, setPage] = useState(1);
   
-  // 使用 SWR 获取第一页数据，禁用自动重新验证
-  const { data: firstPageData } = useSWR('posts-1', () => fetchPosts(1), {
+  // 使用 SWR 获取第一页数据
+  const { data: firstPageData } = useSWR('posts-1', () => mockPosts.fetchPosts(1), {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 0,
@@ -80,12 +34,11 @@ export default function Home() {
 
     try {
       const nextPage = page + 1;
-      const newPosts = await fetchPosts(nextPage);
+      const newPosts = await mockPosts.fetchPosts(nextPage);
       
       setAdditionalPosts(prev => [...prev, ...newPosts]);
       setPage(nextPage);
       
-      // 模拟数据到达末尾
       if (nextPage >= 3) {
         setHasMore(false);
       }
