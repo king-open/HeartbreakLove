@@ -75,9 +75,11 @@ export default function Home() {
 
   // 修改添加新帖子的函数
   const addNewPost = (newPost) => {
+    // 保存到 mockData
+    const savedPost = mockPosts.addNewPost(newPost);
     // 更新第一页数据
     mutateFirstPage(currentData => {
-      return [newPost, ...(currentData || [])];
+      return [savedPost, ...(currentData || [])];
     }, false);
   };
 
