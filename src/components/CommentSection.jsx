@@ -2,6 +2,7 @@ import { useState, useRef, forwardRef, useImperativeHandle, useEffect } from 're
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { UserCircleIcon } from '@heroicons/react/24/solid';
+import CommentMenu from './CommentMenu';
 
 const CommentSection = forwardRef(({ comments: initialComments, isCommenting, onClose, onNewComment }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,8 +57,10 @@ const CommentSection = forwardRef(({ comments: initialComments, isCommenting, on
     onNewComment?.();
   };
 
+  if (!isOpen && (!comments || comments.length === 0)) return null;
+
   return (
-    <div ref={commentSectionRef} className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+    <div ref={commentSectionRef} className={`mt-4 ${isOpen ? 'border-t border-gray-200 dark:border-gray-700 pt-4' : ''}`}>
       {isOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
@@ -83,29 +86,41 @@ const CommentSection = forwardRef(({ comments: initialComments, isCommenting, on
             </button>
           </form>
 
-          <div className="space-y-4">
-            {comments.map((comment) => (
-              <motion.div
-                key={comment.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex gap-3"
-              >
-                <UserCircleIcon className="w-8 h-8 text-gray-400" />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{comment.author}</span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(comment.timestamp).toLocaleString()}
-                    </span>
+          {comments.length > 0 && (
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <motion.div
+                  key={comment.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex gap-3 group"
+                >
+                  <UserCircleIcon className="w-8 h-8 text-gray-400 flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{comment.author}</span>
+                        <span className="text-xs text-gray-500">
+                          {new Date(comment.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                      <CommentMenu 
+                        onDelete={() => {
+                          console.log('删除评论:', comment.id);
+                        }}
+                        onReport={() => {
+                          console.log('举报评论:', comment.id);
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      {comment.content}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {comment.content}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
       )}
     </div>
