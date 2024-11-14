@@ -5,11 +5,22 @@ import { useState, useRef } from 'react';
 
 export default function CreatePostModal({ isOpen, onClose, onSubmit }) {
   const [content, setContent] = useState('');
+  const [contentLength, setContentLength] = useState(0);
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const fileInputRef = useRef(null);
+
+  const MAX_CONTENT_LENGTH = 200;
+
+  const handleContentChange = (e) => {
+    const text = e.target.value;
+    if (text.length <= MAX_CONTENT_LENGTH) {
+      setContent(text);
+      setContentLength(text.length);
+    }
+  };
 
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
@@ -135,17 +146,22 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
+                className="relative"
               >
                 <textarea
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={handleContentChange}
                   placeholder="分享你的想法..."
                   rows={4}
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 
                            dark:border-gray-600 dark:bg-gray-700 
                            focus:ring-2 focus:ring-primary-500 focus:border-transparent
                            transition-all duration-300"
+                  maxLength={MAX_CONTENT_LENGTH}
                 />
+                <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                  {contentLength}/{MAX_CONTENT_LENGTH}
+                </div>
               </motion.div>
 
               {!showImageUpload && !previewUrl && (

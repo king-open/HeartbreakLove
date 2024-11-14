@@ -95,7 +95,7 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8 pb-20">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 text-transparent bg-clip-text">
-          治愈时刻
+          高能量的时刻
         </h1>
         <div className="text-sm text-gray-500 dark:text-gray-400">
           在这里分享你的故事

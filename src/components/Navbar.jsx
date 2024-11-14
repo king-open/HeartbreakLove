@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon, UserCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserCircleIcon, PlusCircleIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import CreatePostModal from './CreatePostModal';
 
@@ -8,7 +8,6 @@ export default function Navbar() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleCreatePost = async (newPost) => {
-    // 调用全局函数添加新帖子
     if (window.addNewPost) {
       window.addNewPost(newPost);
     }
@@ -40,6 +39,17 @@ export default function Navbar() {
             >
               <PlusCircleIcon className="w-8 h-8" />
             </button>
+
+            <Link 
+              to="/messages"
+              className={`flex flex-col items-center space-y-1
+                      ${location.pathname === '/messages' 
+                        ? 'text-primary-500' 
+                        : 'text-gray-500 hover:text-primary-500'}`}
+            >
+              <ChatBubbleLeftRightIcon className="w-6 h-6" />
+              <span className="text-xs">消息</span>
+            </Link>
             
             <Link 
               to="/profile"

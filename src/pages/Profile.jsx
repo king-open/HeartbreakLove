@@ -1,11 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserCircleIcon, PencilSquareIcon, CameraIcon } from '@heroicons/react/24/solid';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
-import { useState, useEffect } from 'react';
+import { UserCircleIcon, PencilSquareIcon, CameraIcon, PhotoIcon } from '@heroicons/react/24/solid';
+import { useState } from 'react';
 import PostCard from '../components/PostCard';
 import AvatarUploadModal from '../components/AvatarUploadModal';
 import ProfileEditModal from '../components/ProfileEditModal';
 import { initialPosts, initialUserInfo } from '../config/initialData';
+import BackgroundUploadModal from '../components/BackgroundUploadModal';
 
 export default function Profile() {
   const [userPosts] = useState(initialPosts);
@@ -38,6 +38,10 @@ export default function Profile() {
     }
   ]);
 
+  const [backgroundUrl, setBackgroundUrl] = useState(null);
+
+  const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
+
   const displayPosts = activeTab === 'posts' ? userPosts : likedPosts;
 
   const handleAvatarUpload = (imageUrl) => {
@@ -69,23 +73,9 @@ export default function Profile() {
     setIsFollowed(!isFollowed);
   };
 
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return document.documentElement.classList.contains('dark');
-  });
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', isDarkMode ? 'light' : 'dark');
+  const handleBackgroundUpload = (imageUrl) => {
+    setBackgroundUrl(imageUrl);
   };
-
-  useEffect(() => {
-    const theme = localStorage.getItem('theme');
-    if (theme === 'dark' && !document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    }
-  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -93,147 +83,151 @@ export default function Profile() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 relative"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden"
       >
-        {/* 修改暗黑模式切换按钮 */}
-        <motion.button
-          onClick={toggleDarkMode}
-          className="absolute top-4 right-4 p-2 rounded-full
-                   bg-gray-100/80 dark:bg-gray-700/80 backdrop-blur-sm
-                   text-gray-600 dark:text-gray-300
-                   hover:bg-gray-200 dark:hover:bg-gray-600
-                   transition-all duration-300"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <div className="relative w-5 h-5">
-            <motion.div
-              initial={false}
-              animate={{
-                rotate: isDarkMode ? 45 : 0,
-                scale: isDarkMode ? 0 : 1,
-                opacity: isDarkMode ? 0 : 1
-              }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              style={{ position: 'absolute', inset: 0 }}
-            >
-              <SunIcon className="w-5 h-5 text-orange-400" />
-            </motion.div>
-            
-            <motion.div
-              initial={false}
-              animate={{
-                rotate: isDarkMode ? 0 : -45,
-                scale: isDarkMode ? 1 : 0,
-                opacity: isDarkMode ? 1 : 0
-              }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              style={{ position: 'absolute', inset: 0 }}
-            >
-              <MoonIcon className="w-5 h-5 text-indigo-300" />
-            </motion.div>
-          </div>
-        </motion.button>
-
-        {/* 基本信息区域 */}
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* 左侧：头像和编辑按钮 */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative group">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="rounded-full overflow-hidden shadow-lg"
-              >
-                {avatarUrl ? (
-                  <img 
-                    src={avatarUrl} 
-                    alt="用户头像" 
-                    className="w-24 h-24 object-cover"
-                  />
-                ) : (
-                  <UserCircleIcon className="w-24 h-24 text-gray-400" />
-                )}
-              </motion.div>
-              <div 
-                className="absolute inset-0 flex items-center justify-center 
-                          bg-black bg-opacity-40 rounded-full opacity-0 
-                          group-hover:opacity-100 transition-all duration-200
-                          cursor-pointer"
-                onClick={() => setIsAvatarModalOpen(true)}
-              >
-                <CameraIcon className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <motion.button 
-              onClick={() => setIsEditModalOpen(true)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-2 px-4 py-2 text-sm
-                       bg-gray-100 dark:bg-gray-700 
-                       text-gray-600 dark:text-gray-300
-                       rounded-full hover:bg-gray-200 dark:hover:bg-gray-600
-                       transition-colors"
-            >
-              <PencilSquareIcon className="w-4 h-4" />
-              编辑资料
-            </motion.button>
-          </div>
-
-          {/* 右侧：用户信息 */}
-          <div className="flex-1 space-y-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {userInfo.name}
-              </h1>
-              <p className="mt-1 text-gray-600 dark:text-gray-400">
-                {userInfo.bio}
-              </p>
-            </div>
-
-            {/* 数据统计 */}
-            <div className="flex gap-6 py-3">
-              <div className="text-center">
-                <div className="font-semibold text-gray-900 dark:text-white">
-                  {stats.postsCount}
-                </div>
-                <div className="text-sm text-gray-500">帖子</div>
-              </div>
-              <motion.div 
-                className="text-center cursor-pointer"
-                onClick={handleFollowClick}
+        {/* 背景图片区域 */}
+        <div className="relative h-48 group">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
+          {backgroundUrl ? (
+            <img 
+              src={backgroundUrl}
+              alt="背景图片"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-primary-500/30 to-secondary-500/30 
+                   flex items-center justify-center">
+              <motion.button
+                onClick={() => setIsBackgroundModalOpen(true)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm
+                         text-white border border-white/20
+                         flex items-center gap-2 hover:bg-white/20 transition-all"
               >
-                <div className="font-semibold text-gray-900 dark:text-white">
-                  {stats.followersCount}
+                <PhotoIcon className="w-5 h-5" />
+                <span>自定义背景</span>
+              </motion.button>
+            </div>
+          )}
+          
+          {/* 更换背景按钮 - 仅在有背景图时显示 */}
+          {backgroundUrl && (
+            <motion.button
+              onClick={() => setIsBackgroundModalOpen(true)}
+              className="absolute right-4 bottom-4 p-2 rounded-full
+                       bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100
+                       text-white transition-all duration-300
+                       hover:bg-white/20"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <PhotoIcon className="w-5 h-5" />
+            </motion.button>
+          )}
+        </div>
+
+        {/* 个人信息内容 - 向上偏移 */}
+        <div className="px-6 -mt-16 pb-6 relative">
+          {/* 头像部分 - 调整位置 */}
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative group">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="rounded-full overflow-hidden shadow-lg border-4 border-white dark:border-gray-800"
+                >
+                  {avatarUrl ? (
+                    <img 
+                      src={avatarUrl} 
+                      alt="用户头像" 
+                      className="w-24 h-24 object-cover"
+                    />
+                  ) : (
+                    <UserCircleIcon className="w-24 h-24 text-gray-400" />
+                  )}
+                </motion.div>
+                <div 
+                  className="absolute inset-0 flex items-center justify-center 
+                            bg-black bg-opacity-40 rounded-full opacity-0 
+                            group-hover:opacity-100 transition-all duration-200
+                            cursor-pointer"
+                  onClick={() => setIsAvatarModalOpen(true)}
+                >
+                  <CameraIcon className="w-6 h-6 text-white" />
                 </div>
-                <div className="text-sm text-gray-500">
-                  {isFollowed ? '已关注' : '关注'}
-                </div>
-              </motion.div>
-              <div className="text-center">
-                <div className="font-semibold text-gray-900 dark:text-white">
-                  {stats.followingCount}
-                </div>
-                <div className="text-sm text-gray-500">正在关注</div>
               </div>
+              <motion.button 
+                onClick={() => setIsEditModalOpen(true)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 px-4 py-2 text-sm
+                         bg-gray-100 dark:bg-gray-700 
+                         text-gray-600 dark:text-gray-300
+                         rounded-full hover:bg-gray-200 dark:hover:bg-gray-600
+                         transition-colors"
+              >
+                <PencilSquareIcon className="w-4 h-4" />
+                编辑资料
+              </motion.button>
             </div>
 
-            {/* 标签和心情 */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/30 
-                             text-blue-600 dark:text-blue-300 rounded-full">
-                {userInfo.mood}
-              </span>
-              {userInfo.tags.map(tag => (
-                <span 
-                  key={tag}
-                  className="px-3 py-1 text-sm bg-gray-50 dark:bg-gray-700 
-                           text-gray-600 dark:text-gray-300 rounded-full"
+            {/* 右侧：用户信息 */}
+            <div className="flex-1 space-y-4">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {userInfo.name}
+                </h1>
+                <p className="mt-1 text-gray-600 dark:text-gray-400">
+                  {userInfo.bio}
+                </p>
+              </div>
+
+              {/* 数据统计 */}
+              <div className="flex gap-6 py-3">
+                <div className="text-center">
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {stats.postsCount}
+                  </div>
+                  <div className="text-sm text-gray-500">帖子</div>
+                </div>
+                <motion.div 
+                  className="text-center cursor-pointer"
+                  onClick={handleFollowClick}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  #{tag}
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {stats.followersCount}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {isFollowed ? '已关注' : '关注'}
+                  </div>
+                </motion.div>
+                <div className="text-center">
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {stats.followingCount}
+                  </div>
+                  <div className="text-sm text-gray-500">正在关注</div>
+                </div>
+              </div>
+
+              {/* 标签和心情 */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/30 
+                               text-blue-600 dark:text-blue-300 rounded-full">
+                  {userInfo.mood}
                 </span>
-              ))}
+                {userInfo.tags.map(tag => (
+                  <span 
+                    key={tag}
+                    className="px-3 py-1 text-sm bg-gray-50 dark:bg-gray-700 
+                             text-gray-600 dark:text-gray-300 rounded-full"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -312,6 +306,13 @@ export default function Profile() {
         onClose={() => setIsEditModalOpen(false)}
         userInfo={userInfo}
         onSave={handleProfileSave}
+      />
+
+      {/* 添加背景上传模态框 */}
+      <BackgroundUploadModal
+        isOpen={isBackgroundModalOpen}
+        onClose={() => setIsBackgroundModalOpen(false)}
+        onUpload={handleBackgroundUpload}
       />
     </div>
   );
