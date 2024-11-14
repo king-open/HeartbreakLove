@@ -8,8 +8,10 @@ export default function Navbar() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleCreatePost = async (newPost) => {
-    // 这里可以添加发布帖子的逻辑
-    console.log('New post:', newPost);
+    // 调用全局函数添加新帖子
+    if (window.addNewPost) {
+      window.addNewPost(newPost);
+    }
   };
 
   return (

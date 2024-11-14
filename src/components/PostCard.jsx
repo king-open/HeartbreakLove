@@ -52,17 +52,19 @@ export default function PostCard({ post }) {
       transition={{ duration: 0.5 }}
       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
     >
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        transition={{ duration: 0.2 }}
-      >
-        <img
-          src={post.image}
-          alt=""
-          className="w-full h-48 object-cover"
-          loading="lazy"
-        />
-      </motion.div>
+      {post.image && (
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+        >
+          <img
+            src={post.image}
+            alt=""
+            className="w-full h-48 object-cover"
+            loading="lazy"
+          />
+        </motion.div>
+      )}
       
       <div className="p-4">
         <p className="text-gray-700 dark:text-gray-300 mb-4">
@@ -110,7 +112,7 @@ export default function PostCard({ post }) {
 PostCard.propTypes = {
   post: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    image: PropTypes.string.isRequired,
+    image: PropTypes.string,
     content: PropTypes.string.isRequired,
     likes: PropTypes.number.isRequired,
     comments: PropTypes.array.isRequired,

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import useSWR from 'swr';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
@@ -10,7 +10,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   
   // 使用 SWR 获取第一页数据
-  const { data: firstPageData } = useSWR('posts-1', () => mockPosts.fetchPosts(1), {
+  const { data: firstPageData, mutate: mutateFirstPage } = useSWR('posts-1', () => mockPosts.fetchPosts(1), {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 0,
@@ -72,6 +72,22 @@ export default function Home() {
     message: PropTypes.string.isRequired,
     onRetry: PropTypes.func.isRequired,
   };
+
+  // 修改添加新帖子的函数
+  const addNewPost = (newPost) => {
+    // 更新第一页数据
+    mutateFirstPage(currentData => {
+      return [newPost, ...(currentData || [])];
+    }, false);
+  };
+
+  // 将 addNewPost 函数传递给全局
+  useEffect(() => {
+    window.addNewPost = addNewPost;
+    return () => {
+      delete window.addNewPost;
+    };
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8 pb-20">
