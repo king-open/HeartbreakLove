@@ -1,7 +1,8 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { HomeIcon, UserCircleIcon, PlusCircleIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import CreatePostModal from './CreatePostModal';
+import NavItem from './NavItem';
 
 export default function Navbar() {
   const location = useLocation();
@@ -19,17 +20,12 @@ export default function Navbar() {
                     shadow-lg border-t border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4">
           <div className="flex justify-around items-center py-3">
-            <Link 
+            <NavItem 
               to="/"
-              className={`flex flex-col items-center space-y-1
-                      ${location.pathname === '/' 
-                        ? 'text-primary-500' 
-                        : 'text-gray-500 hover:text-primary-500'}`}
-            >
-              <HomeIcon className="w-6 h-6" />
-              <span className="text-xs">首页</span>
-            </Link>
-            
+              icon={HomeIcon}
+              label="首页"
+              isActive={location.pathname === '/'}
+            />
             <button 
               onClick={() => setIsCreateModalOpen(true)}
               className="flex flex-col items-center space-y-1 
@@ -39,28 +35,18 @@ export default function Navbar() {
             >
               <PlusCircleIcon className="w-8 h-8" />
             </button>
-
-            <Link 
+            <NavItem 
               to="/messages"
-              className={`flex flex-col items-center space-y-1
-                      ${location.pathname === '/messages' 
-                        ? 'text-primary-500' 
-                        : 'text-gray-500 hover:text-primary-500'}`}
-            >
-              <ChatBubbleLeftRightIcon className="w-6 h-6" />
-              <span className="text-xs">消息</span>
-            </Link>
-            
-            <Link 
+              icon={ChatBubbleLeftRightIcon}
+              label="消息"
+              isActive={location.pathname === '/messages'}
+            />
+            <NavItem 
               to="/profile"
-              className={`flex flex-col items-center space-y-1
-                      ${location.pathname === '/profile' 
-                        ? 'text-primary-500' 
-                        : 'text-gray-500 hover:text-primary-500'}`}
-            >
-              <UserCircleIcon className="w-6 h-6" />
-              <span className="text-xs">我的</span>
-            </Link>
+              icon={UserCircleIcon}
+              label="我的"
+              isActive={location.pathname === '/profile'}
+            />
           </div>
         </div>
       </nav>
